@@ -1,12 +1,13 @@
 #!/usr/bin/env python
 import argparse, subprocess, json, os, sys, base64, binascii, time, hashlib, re, copy, textwrap, logging
+import ftp_server
 try:
     from urllib.request import urlopen # Python 3
 except ImportError:
     from urllib2 import urlopen # Python 2
 
-#DEFAULT_CA = "https://acme-staging.api.letsencrypt.org"
-DEFAULT_CA = "https://acme-v01.api.letsencrypt.org"
+DEFAULT_CA = "https://acme-staging.api.letsencrypt.org"
+#DEFAULT_CA = "https://acme-v01.api.letsencrypt.org"
 
 LOGGER = logging.getLogger(__name__)
 LOGGER.addHandler(logging.StreamHandler())
@@ -110,6 +111,9 @@ def get_crt(account_key, csr, acme_dir, log=LOGGER, CA=DEFAULT_CA):
         wellknown_path = os.path.join(acme_dir, token)
         with open(wellknown_path, "w") as wellknown_file:
             wellknown_file.write(keyauthorization)
+
+        # upload to FTP server
+        ftp_server.upload_ftp(wellknown_path, token)
 
         # check that the file is in place
         wellknown_url = "http://{0}/.well-known/acme-challenge/{1}".format(domain, token)
