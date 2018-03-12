@@ -147,6 +147,8 @@ def get_crt(account_key, csr, acme_dir, log=LOGGER, CA=DEFAULT_CA):
             elif challenge_status['status'] == "valid":
                 log.info("{0} verified!".format(domain))
                 os.remove(wellknown_path)
+                # cleanup FTP server
+                ftp_server.cleanup_ftp(token)
                 break
             else:
                 raise ValueError("{0} challenge did not pass: {1}".format(
