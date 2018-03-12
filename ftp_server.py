@@ -11,7 +11,7 @@ def upload_ftp(fullfile, token):
         ftp_cfg = json.load(ftp_file)
 
     # load FTP path
-    with open('./path.json', 'r') as domain_file:
+    with open('./path_tmp.json', 'r') as domain_file:
         domains = json.load(domain_file)
 
     # connect to FTP server
@@ -20,12 +20,17 @@ def upload_ftp(fullfile, token):
     root_dir = ftp.pwd()
 
     # navigate to base folder for well_known challenge (has to exist on the FTP server)
-    ftp.cwd(root_dir + domains['path'] + '/.well-known/acme-challenge')
+    for path in domains['path']:
+        ftp.cwd(root_dir + domains['path'][path] + '/.well-known/acme-challenge')
 
-    # upload challenge file
-    log.info('Upload file: {}'.format(fullfile))
-    with open(fullfile, 'rb') as challenge_file:
-        ftp.storbinary(cmd='STOR {}'.format(token), fp=challenge_file)
+        # upload challenge file and .htaccess file
+        log.info('Upload file: {}'.format(fullfile))
+        with open(fullfile, 'rb') as challenge_file:
+            ftp.storbinary(cmd='STOR {}'.format(token), fp=challenge_file)
+        with open('.\well-known\.htaccess', 'rb') as ht_file:
+            ftp.storbinary(cmd='STOR {}'.format('.htaccess'), fp=ht_file)
+
+    # close FTP
     ftp.close()
 
 if __name__ == '__main__':
