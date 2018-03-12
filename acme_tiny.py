@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 import argparse, subprocess, json, os, sys, base64, binascii, time, hashlib, re, copy, textwrap, logging
-import ftp_server
+from . import ftp_server
 try:
     from urllib.request import urlopen # Python 3
 except ImportError:
@@ -10,8 +10,8 @@ DEFAULT_CA = "https://acme-staging.api.letsencrypt.org"
 #DEFAULT_CA = "https://acme-v01.api.letsencrypt.org"
 
 LOGGER = logging.getLogger(__name__)
-LOGGER.addHandler(logging.StreamHandler())
-LOGGER.setLevel(logging.INFO)
+#LOGGER.addHandler(logging.StreamHandler())
+#LOGGER.setLevel(logging.INFO)
 
 def get_crt(account_key, csr, acme_dir, log=LOGGER, CA=DEFAULT_CA):
     # helper function base64 encode for jose spec
@@ -196,7 +196,7 @@ def main(argv):
     args = parser.parse_args(argv)
     LOGGER.setLevel(args.quiet or LOGGER.level)
     signed_crt = get_crt(args.account_key, args.csr, args.acme_dir, log=LOGGER, CA=args.ca)
-    sys.stdout.write(signed_crt)
+    return signed_crt
 
 if __name__ == "__main__": # pragma: no cover
     main(sys.argv[1:])

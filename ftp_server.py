@@ -5,14 +5,13 @@ import logging
 def upload_ftp(fullfile, token):
 
     log = logging.getLogger(__name__)
-    log.addHandler(logging.StreamHandler())
 
     # load FTP credentials
-    with open('./credentials/ftp.json') as ftp_file:
+    with open('./credentials/ftp.json', 'r') as ftp_file:
         ftp_cfg = json.load(ftp_file)
 
     # load FTP path
-    with open('./domains.json') as domain_file:
+    with open('./path.json', 'r') as domain_file:
         domains = json.load(domain_file)
 
     # connect to FTP server
